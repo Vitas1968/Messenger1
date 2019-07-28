@@ -1,3 +1,35 @@
 #btn1 {
-    -fx-background-color: blue;
+-fx-text-fill: white;
+    -fx-background-color: green;
+    -fx-font: normal bold 14px 'serif';
+    -fx-border-radius: 20;
+        -fx-background-radius: 20;
+
+
 }
+#btn1:hover {
+         -fx-background-color: orange;
+     }
+#textField{
+-fx-border-color: green;
+-fx-border-width: 2;
+-fx-text-fill: yellow;
+-fx-background-color: grey;
+
+}
+
+#textArea {
+    -fx-border-color: green;
+
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+
+    -fx-text-fill: red;
+    -fx-background-color: grey;
+    -fx-font: normal bold 12px 'arial';
+
+}
+
+
+
+
