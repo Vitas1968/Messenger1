@@ -10,7 +10,7 @@
 <?scenebuilder-stylesheet /css/Style.css?>
 
 <?import java.net.URL?>
-<VBox fx:controller="sample.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
+<VBox fx:controller="Client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
     <stylesheets><URL value="@/css/Style.css"/></stylesheets>
     <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
     <HBox>
