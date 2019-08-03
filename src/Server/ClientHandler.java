@@ -57,6 +57,7 @@ public class ClientHandler
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("ClientHandler создан");
     }
 
     public void sendMsg(String msg) {
