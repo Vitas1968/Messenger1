@@ -21,6 +21,7 @@ public class Server
             while (true) {
                 socket = server.accept();
                 clients.add(new ClientHandler(this, socket));
+                System.out.println("Клиент подключился");
             }
 
         } catch (IOException e) {
