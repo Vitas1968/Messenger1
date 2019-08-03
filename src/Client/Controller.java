@@ -1,6 +1,7 @@
 package Client;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -12,7 +13,8 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller {
+public class Controller implements Initializable
+{
     @FXML
     TextArea textArea;
 
@@ -31,6 +33,7 @@ public class Controller {
     final int PORT = 8189;
 
 
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             socket = new Socket(IP_ADRESS, PORT);
@@ -44,6 +47,7 @@ public class Controller {
                         while (true) {
                             String str = in.readUTF();
                             textArea.appendText(str + "\n");
+                            //System.out.println(str);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -60,6 +64,7 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Клиент создан");
     }
 
 
@@ -67,6 +72,7 @@ public class Controller {
     public void sendMsg() {
         try {
             out.writeUTF(textField.getText());
+            System.out.println(textField.getText());
             textField.clear();
             textField.requestFocus();
         } catch (IOException e) {
