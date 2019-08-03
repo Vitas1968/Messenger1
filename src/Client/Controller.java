@@ -1,6 +1,7 @@
 package Client;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -14,6 +15,9 @@ import java.util.ResourceBundle;
 public class Controller {
     @FXML
     TextArea textArea;
+
+    @FXML
+    Button btn1;
 
 
     @FXML
