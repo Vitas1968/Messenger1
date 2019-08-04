@@ -11,11 +11,16 @@ public class ClientHandler
     private DataOutputStream out;
     private DataInputStream in;
     private Server server;
+    private String nameClient;
 
-    public ClientHandler(Server server, Socket socket) {
+
+
+
+    public ClientHandler(Server server, Socket socket, String nameClient) {
         try {
             this.socket = socket;
             this.server = server;
+            this.nameClient=nameClient;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
 
@@ -25,12 +30,22 @@ public class ClientHandler
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            System.out.println("Client " + str);
+                           /* System.out.println("Client "
+                                    + server.getClients().get(server.getClients().indexOf(this))
+                                    + " пишет "
+                                    + str);*/
+
+                           // System.out.println("Клиентов подключено-> "+server.getClients().size());
                             if (str.equals("/end")) {
                                 out.writeUTF("/serverClosed");
+                                delClient();
+                                server.broadcastMsg(ClientHandler.this.getNameClient()+" отключился от чата");
+
+                               // System.out.println("Индекс клиента - "+ server.getClients().indexOf(this));
                                 break;
                             }
                             server.broadcastMsg(str);
+                            System.out.println("Клиент "+ ClientHandler.this.getNameClient()+ " пишет "+str);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -58,6 +73,18 @@ public class ClientHandler
             e.printStackTrace();
         }
         System.out.println("ClientHandler создан");
+    }
+
+    void delClient()
+    {
+        System.out.println("Клиент "+ClientHandler.this.getNameClient()+ " отключился ");
+        server.getClients().remove(ClientHandler.this);
+        System.out.println("Клиентов после /end подключено-> "+server.getClients().size());
+    }
+
+    public String getNameClient()
+    {
+        return nameClient;
     }
 
     public void sendMsg(String msg) {
