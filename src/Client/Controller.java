@@ -30,7 +30,7 @@ public class Controller implements Initializable
     DataOutputStream out;
 
     final String IP_ADRESS = "localhost";
-    final int PORT = 8189;
+    final int PORT = 8086;
 
 
     @Override
@@ -47,7 +47,11 @@ public class Controller implements Initializable
                         while (true) {
                             String str = in.readUTF();
                             textArea.appendText(str + "\n");
-                            //System.out.println(str);
+                            if(str.equals("/serverClosed"))
+                            { System.out.println("Клиент отключился");
+                                break;
+
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -72,7 +76,6 @@ public class Controller implements Initializable
     public void sendMsg() {
         try {
             out.writeUTF(textField.getText());
-            System.out.println(textField.getText());
             textField.clear();
             textField.requestFocus();
         } catch (IOException e) {
