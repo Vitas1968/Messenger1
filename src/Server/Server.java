@@ -32,6 +32,7 @@ public class Server
                 clients.add(new ClientHandler(this, socket, nameClient+count));
 
                 System.out.println("Клиент " +clients.get(count).getNameClient()+ " подключился");
+                hello("К нам присоединился ",clients.lastElement().getNameClient());
                 count++;
             }
 
@@ -52,9 +53,29 @@ public class Server
         }
     }
 
-    public void broadcastMsg(String msg) {
+    public void hello(String msg, String nameClient) {
+        String tmp = msg+ " -> "+nameClient;
         for (ClientHandler o: clients) {
-            o.sendMsg(msg);
+            if (nameClient.equals(o.getNameClient())) continue;
+            o.sendMsg(tmp);
         }
+    }
+
+    public void broadcastMsg(String msg, String nameClient) {
+        String tmp = nameClient+ " -> "+msg;
+        for (ClientHandler o: clients) {
+            if (nameClient.equals(o.getNameClient()))
+            {o.sendMsg(msg);
+            continue;}
+            o.sendMsg(tmp);
+        }
+    }
+
+    public void subscribe(ClientHandler client) {
+        clients.add(client);
+    }
+
+    public void unsubscribe(ClientHandler client) {
+        clients.remove(client);
     }
 }
