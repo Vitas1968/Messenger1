@@ -82,6 +82,7 @@ public class ClientHandler
                             e.printStackTrace();
                         }
                         server.unsubscribe(ClientHandler.this);
+                        server.broadcastMsg(ClientHandler.this.getNick()+" "+"покинул чат");
                     }
                 }
             }).start();
