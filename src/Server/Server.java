@@ -55,12 +55,17 @@ public class Server
         }
     }
 
+
     // отправка личного сообщения указанному абоненту
     public void privateMsg(String nick, String msg, ClientHandler client) {
         for (ClientHandler o: clients) {
             if(o.getNick().equals(nick))
-            o.sendMsg(client.getNick()+" "+msg);
+            {
+                o.sendMsg(client.getNick() + " " + msg);
+                return;
+            }
         }
+        client.sendMsg("Такого абонента в чате нет");
     }
 
     public void subscribe(ClientHandler client) {
