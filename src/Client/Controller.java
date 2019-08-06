@@ -1,6 +1,7 @@
 package Client;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -8,6 +9,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -111,6 +113,22 @@ public class Controller
     }
 
 
+    private EventHandler<WindowEvent> closeEventHandler = new EventHandler<WindowEvent>() {
+        @Override
+        public void handle(WindowEvent event) {
+            try
+            {
+                out.writeUTF("/end");
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    public EventHandler<WindowEvent> getCloseEventHandler(){
+        return closeEventHandler;
+    }
 
     public void sendMsg() {
         try {
