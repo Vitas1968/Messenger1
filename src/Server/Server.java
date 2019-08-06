@@ -3,18 +3,12 @@ package Server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Vector;
 
 public class Server
 {
     private Vector<ClientHandler> clients;
-    int count=0;
-    private String nameClient= "Client";
-
-    public Vector getClients()
-    {
-        return clients;
-    }
 
     public Server() {
         clients = new Vector<>();
@@ -24,19 +18,19 @@ public class Server
 
 
         try {
+            AuthService.connect();
             server = new ServerSocket(8086);
             System.out.println("Сервер запущен!");
 
             while (true) {
                 socket = server.accept();
-                clients.add(new ClientHandler(this, socket, nameClient+count));
-
-                System.out.println("Клиент " +clients.get(count).getNameClient()+ " подключился");
-                hello("К нам присоединился ",clients.lastElement().getNameClient());
-                count++;
+                new ClientHandler(this, socket);
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e)
+        {
             e.printStackTrace();
         } finally {
             try {
@@ -50,24 +44,22 @@ public class Server
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            AuthService.disconnect();
         }
     }
 
-    public void hello(String msg, String nameClient) {
-        String tmp = msg+ " -> "+nameClient;
+
+    public void broadcastMsg(String msg) {
         for (ClientHandler o: clients) {
-            if (nameClient.equals(o.getNameClient())) continue;
-            o.sendMsg(tmp);
+            o.sendMsg(msg);
         }
     }
 
-    public void broadcastMsg(String msg, String nameClient) {
-        String tmp = nameClient+ " -> "+msg;
+    // отправка личного сообщения указанному абоненту
+    public void privateMsg(String nick, String msg, ClientHandler client) {
         for (ClientHandler o: clients) {
-            if (nameClient.equals(o.getNameClient()))
-            {o.sendMsg(msg);
-            continue;}
-            o.sendMsg(tmp);
+            if(o.getNick().equals(nick))
+            o.sendMsg(client.getNick()+" "+msg);
         }
     }
 
