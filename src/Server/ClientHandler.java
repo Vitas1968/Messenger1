@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class ClientHandler
 {
@@ -11,16 +12,15 @@ public class ClientHandler
     private DataOutputStream out;
     private DataInputStream in;
     private Server server;
-    private String nameClient;
+    private String nick;
 
 
 
 
-    public ClientHandler(Server server, Socket socket, String nameClient) {
+    public ClientHandler(Server server, Socket socket) {
         try {
             this.socket = socket;
             this.server = server;
-            this.nameClient=nameClient;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
 
@@ -30,24 +30,40 @@ public class ClientHandler
                     try {
                         while (true) {
                             String str = in.readUTF();
-                           /* System.out.println("Client "
-                                    + server.getClients().get(server.getClients().indexOf(this))
-                                    + " пишет "
-                                    + str);*/
+                            if (str.startsWith("/auth")) {
+                                String[] tokens = str.split(" ");
+                                String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
+                                if (newNick != null) {
+                                    sendMsg("/authok");
+                                    nick = newNick;
+                                    server.subscribe(ClientHandler.this);
+                                    break;
+                                } else {
+                                    sendMsg("Неверный логин/пароль!");
+                                }
+                            }
+                        }
+                        while (true) {
+                            String str = in.readUTF();
+                            System.out.println("Client " + str);
 
-                           // System.out.println("Клиентов подключено-> "+server.getClients().size());
+                            // реализация личного сообщения
+                            if (str.startsWith("/w"))
+                            {
+                                String[] tokens = str.split(" ");
+                                server.privateMsg(tokens[1],tokens[2],ClientHandler.this);
+                                continue;
+                            }
                             if (str.equals("/end")) {
                                 out.writeUTF("/serverClosed");
-                                delClient();
-                                server.broadcastMsg(ClientHandler.this.getNameClient()+" отключился от чата");
-
-                               // System.out.println("Индекс клиента - "+ server.getClients().indexOf(this));
                                 break;
                             }
-                            server.broadcastMsg(str);
-                            System.out.println("Клиент "+ ClientHandler.this.getNameClient()+ " пишет "+str);
+                            server.broadcastMsg(nick + ": " + str);
                         }
                     } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e)
+                    {
                         e.printStackTrace();
                     } finally {
                         try {
@@ -65,6 +81,8 @@ public class ClientHandler
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        server.unsubscribe(ClientHandler.this);
+                        server.broadcastMsg(ClientHandler.this.getNick()+" "+"покинул чат");
                     }
                 }
             }).start();
@@ -75,16 +93,9 @@ public class ClientHandler
         System.out.println("ClientHandler создан");
     }
 
-    void delClient()
+    public String getNick()
     {
-        System.out.println("Клиент "+ClientHandler.this.getNameClient()+ " отключился ");
-        server.getClients().remove(ClientHandler.this);
-        System.out.println("Клиентов после /end подключено-> "+server.getClients().size());
-    }
-
-    public String getNameClient()
-    {
-        return nameClient;
+        return nick;
     }
 
     public void sendMsg(String msg) {
