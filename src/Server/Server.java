@@ -47,25 +47,40 @@ public class Server
             AuthService.disconnect();
         }
     }
+    //проверка есть ли такой клиент в чате
+    public boolean isNickBusy(String nick) {
+        for (ClientHandler o : clients) {
+            if (o.getNick().equals(nick)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     public void broadcastMsg(String msg) {
         for (ClientHandler o: clients) {
+            if (msg.startsWith(o.getNick())) {
+                // добаленный к строке пробел метка - свой
+                String tmp=" "+msg;
+                o.sendMsg(tmp);
+                continue;
+            }
             o.sendMsg(msg);
         }
     }
 
 
     // отправка личного сообщения указанному абоненту
-    public void privateMsg(String nick, String msg, ClientHandler client) {
-        for (ClientHandler o: clients) {
-            if(o.getNick().equals(nick))
-            {
-                o.sendMsg(client.getNick() + " " + msg);
+    public void sendPersonalMsg(ClientHandler from, String nickTo, String msg) {
+        for (ClientHandler o : clients) {
+            if (o.getNick().equals(nickTo)) {
+                o.sendMsg("from " + from.getNick() + ": " + msg);
+                from.sendMsg("to " + nickTo + ": " + msg);
                 return;
             }
         }
-        client.sendMsg("Такого абонента в чате нет");
+        from.sendMsg("Клиент с ником " + nickTo + " не найден в чате");
     }
 
     public void subscribe(ClientHandler client) {
