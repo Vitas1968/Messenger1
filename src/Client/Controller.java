@@ -1,14 +1,14 @@
 package Client;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
@@ -20,31 +20,29 @@ import java.util.ResourceBundle;
 
 public class Controller
 {
-    @FXML
-    TextArea textArea;
+
 
     @FXML
     Button btn1;
-
-
     @FXML
     TextField textField;
     @FXML
     HBox bottomPanel;
     @FXML
     HBox upperPanel;
+    @FXML
+    ListView<VBox>listView;
 
     @FXML
     TextField loginfield;
 
     @FXML
     PasswordField passwordfiled;
-
     Socket socket;
     DataInputStream in;
     DataOutputStream out;
     private boolean isAuthorized;
-
+    private boolean flag=false;
     final String IP_ADRESS = "localhost";
     final int PORT = 8086;
 
@@ -80,7 +78,7 @@ public class Controller
                                 setAuthorized(true);
                                 break;
                             } else {
-                                textArea.appendText(str + "\n");
+                                outMsg(str,flag);
                             }
                         }
                         while (true)
@@ -92,7 +90,19 @@ public class Controller
                              System.out.println("Клиент отключился");
                                 break;
                             }
-                            textArea.appendText(str + "\n");
+                            if(str.startsWith(" "))
+                            {
+                                //  размещение своих сообщений справа
+                                str.trim();
+                                flag=true;
+                            } else { //   размещение очтальных сообщений слева
+                                str.trim();
+                                 }
+                                 outMsg(str,flag);
+
+                           // flag= (flag) ? false: flag;
+
+                           // textArea.appendText(str + "\n");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -111,20 +121,6 @@ public class Controller
         }
         System.out.println("Клиент создан");
     }
-
-
-    private EventHandler<WindowEvent> closeEventHandler = new EventHandler<WindowEvent>() {
-        @Override
-        public void handle(WindowEvent event) {
-            try
-            {
-                out.writeUTF("/end");
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
 
     public EventHandler<WindowEvent> getCloseEventHandler(){
         return closeEventHandler;
@@ -154,4 +150,69 @@ public class Controller
             e.printStackTrace();
         }
     }
+
+    // вывод сообщения
+    void outMsg(String msg, boolean flag)
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                Label label = new Label(msg + "\n");
+                VBox vBox = new VBox(label);
+
+                if (!flag)
+                {
+                    vBox.setAlignment(Pos.TOP_LEFT);
+                } else
+                {
+                    vBox.setAlignment(Pos.TOP_RIGHT);
+                }
+                listView.getItems().add(vBox);
+                Controller.this.flag = (Controller.this.flag) ? false : Controller.this.flag;
+            }
+        });
+
+    }
+
+
+    private EventHandler<WindowEvent> closeEventHandler = new EventHandler<WindowEvent>() {
+        @Override
+        public void handle(WindowEvent event) {
+            try
+            {
+                out.writeUTF("/end");
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+
+    // вывод сообщения образец
+//    public void setMsg(String str) {
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                Label message = new Label(str);
+//                VBox messageBox = new VBox(message);
+//                if(nick != "") {
+//                    String[] mass = str.split(":");
+//                    if(nick.equalsIgnoreCase(mass[0])) {
+//                        messageBox.setAlignment(Pos.CENTER_RIGHT);
+//                    }
+//                }
+//                messagesView.getItems().add(messageBox);
+//            }
+//        });
+//    }
+
+
+
+
+
+
+
 }
