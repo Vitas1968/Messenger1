@@ -11,6 +11,8 @@
 
 <?import java.net.URL?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
 <VBox fx:controller="Client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
     <stylesheets><URL value="@/css/Style.css"/></stylesheets>
     <HBox fx:id="upperPanel">
@@ -18,7 +20,10 @@
     <PasswordField promptText="Пароль" fx:id="passwordfiled" onAction="#tryToAuth" />
     <Button text="Авторизоваться" onAction="#tryToAuth"/>
     </HBox>
-    <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
+
+    <ListView fx:id="listView" VBox.vgrow="ALWAYS" >
+
+    </ListView>
     <HBox fx:id="bottomPanel" managed="false" visible="false">
         <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение" onAction="#sendMsg"/>
         <Button fx:id="btn1" text="Send" onAction="#sendMsg"/>
