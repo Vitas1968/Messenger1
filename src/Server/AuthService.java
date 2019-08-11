@@ -20,7 +20,8 @@ public class AuthService
 
     public static String getNickByLoginAndPass(String login, String pass) throws SQLException {
 
-        String qry = String.format("SELECT nickname FROM main where login = '%s' and password = '%s'", login, pass);
+        int passInt = pass.hashCode();
+        String qry = String.format("SELECT nickname FROM main where login = '%s' and password = '%d'", login, passInt);
         ResultSet rs = stmt.executeQuery(qry);
 
         if (rs.next()) {
