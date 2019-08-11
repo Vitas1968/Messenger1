@@ -17,6 +17,7 @@ public class ClientHandler
 
 
 
+
     public ClientHandler(Server server, Socket socket) {
         try {
             this.socket = socket;
@@ -34,10 +35,14 @@ public class ClientHandler
                                 String[] tokens = str.split(" ");
                                 String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
                                 if (newNick != null) {
+                                    if (!server.isNickBusy(newNick)) {
                                     sendMsg("/authok");
                                     nick = newNick;
                                     server.subscribe(ClientHandler.this);
                                     break;
+                                    } else {
+                                        sendMsg("Учетная запись уже используется");
+                                    }
                                 } else {
                                     sendMsg("Неверный логин/пароль!");
                                 }
@@ -50,15 +55,14 @@ public class ClientHandler
                             // реализация личного сообщения
                             if (str.startsWith("/w"))
                             {
-                                String[] tokens = str.split(" ");
-                                server.privateMsg(tokens[1],tokens[2],ClientHandler.this);
-                                continue;
+                                String[] tokens = str.split(" ",3);
+                                server.sendPersonalMsg(ClientHandler.this, tokens[1], tokens[2]);
                             }
                             if (str.equals("/end")) {
                                 out.writeUTF("/serverClosed");
                                 break;
                             }
-                            server.broadcastMsg(nick + ": " + str);
+                            server.broadcastMsg(nick + " : " + str);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -97,6 +101,7 @@ public class ClientHandler
     {
         return nick;
     }
+
 
     public void sendMsg(String msg) {
         try {
