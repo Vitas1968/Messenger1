@@ -18,6 +18,25 @@ public class AuthService
         }
     }
 
+//        public static String setNewUsers(String login, String pass) {
+//        int hash = pass.hashCode();
+//        String sql = String.format("INSERT INTO main (id, login, pass, nick) VALUES (1,'log1', ) FROM main where login = '%s' and password = '%s'", login, hash);
+//
+//        try {
+//            ResultSet rs = stmt.executeQuery(sql);
+//
+//            if (rs.next()) {
+//                String str = rs.getString(1);
+//                return rs.getString(1);
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
+
     public static String getNickByLoginAndPass(String login, String pass) throws SQLException {
 
         int passInt = pass.hashCode();
