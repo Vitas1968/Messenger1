@@ -84,10 +84,12 @@ public class Server
         from.sendMsg("Клиент с ником " + nickTo + " не найден в чате");
     }
 
+    // добавление клиента в чат
     public void subscribe(ClientHandler client) {
         clients.add(client);
     }
 
+    //удаление клиента из чата
     public void unsubscribe(ClientHandler client) {
         clients.remove(client);
     }
