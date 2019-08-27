@@ -52,6 +52,7 @@ public class AuthService
         return null;
     }
 
+    // закрытие соединения с БД
     public static void disconnect() {
         try {
             connection.close();
