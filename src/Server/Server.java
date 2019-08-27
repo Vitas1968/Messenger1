@@ -58,6 +58,7 @@ public class Server
     }
 
 
+    // рассылка сообщений всем участникам чата
     public void broadcastMsg(String msg) {
         for (ClientHandler o: clients) {
             if (msg.startsWith(o.getNick())) {
