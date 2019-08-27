@@ -7,6 +7,7 @@ public class AuthService
     private static Connection connection;
     private static Statement stmt;
 
+    //установка соединения с БД
     public static void connect() throws SQLException
     {
         try {
