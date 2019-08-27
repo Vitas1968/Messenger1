@@ -37,6 +37,7 @@ public class AuthService
 //        return null;
 //    }
 
+    // получение из БД ника по логину и паролю
     public static String getNickByLoginAndPass(String login, String pass) throws SQLException {
 
         int passInt = pass.hashCode();
