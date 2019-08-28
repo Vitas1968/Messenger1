@@ -1,9 +1,6 @@
 package Server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
 
@@ -105,8 +102,24 @@ public class ClientHandler
             e.printStackTrace();
         }
 
-//        System.out.println(nick);
-//        System.out.println("ClientHandler создан");
+
+    }
+
+    // запись сообщения в файл
+    public void saveMsgStorage(String msg)
+    {
+        try(FileWriter writer = new FileWriter(storage, true))
+        {
+            // запись всей строки
+
+            writer.write(msg+"\r\n");
+            writer.flush();
+        }
+        catch(IOException ex){
+
+            System.out.println(ex.getMessage());
+        }
+
     }
 
     // создание хранилища сообщений для клиента
@@ -138,6 +151,7 @@ public class ClientHandler
 
 
     public void sendMsg(String msg) {
+
         try {
             out.writeUTF(msg);
         } catch (IOException e) {
