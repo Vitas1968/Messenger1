@@ -62,12 +62,14 @@ public class Server
     public void broadcastMsg(String msg) {
         for (ClientHandler o: clients) {
             if (msg.startsWith(o.getNick())) {
-                // добаленный к строке пробел метка - свой
+                // добавленный к строке пробел метка - свой
                 String tmp=" "+msg;
                 o.sendMsg(tmp);
+                o.saveMsgStorage(msg);
                 continue;
             }
             o.sendMsg(msg);
+            o.saveMsgStorage(msg);
         }
     }
 
