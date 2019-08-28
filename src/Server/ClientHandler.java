@@ -26,7 +26,7 @@ public class ClientHandler
 
     public ClientHandler(Server server, Socket socket) {
 
-        
+
         try {
             this.socket = socket;
             this.server = server;
@@ -56,6 +56,8 @@ public class ClientHandler
                                 }
                             }
                         }
+                        // создание файла хранилиша
+                        storage=createStorage(path);
                         while (true) {
                             String str = in.readUTF();
                             System.out.println("Client " + str);
@@ -102,25 +104,31 @@ public class ClientHandler
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("ClientHandler создан");
+
+//        System.out.println(nick);
+//        System.out.println("ClientHandler создан");
     }
 
     // создание хранилища сообщений для клиента
     private File createStorage(String path)
     { File newFile =new File(path,"Storage_"+nick+".txt");
-        boolean create=false;
-        try
-        {
-            create = newFile.createNewFile();
 
-        } catch (IOException e)
+        if(newFile.exists()) return newFile;
+        else
         {
-            e.printStackTrace();
+            boolean create=false;
+            try
+            {
+                create = newFile.createNewFile();
+
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            if (create) return newFile;
+            else return null;
         }
-
-        if(create)return newFile;
-        else return null;
-
     }
 
     public String getNick()
