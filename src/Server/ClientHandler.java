@@ -2,6 +2,7 @@ package Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -13,12 +14,19 @@ public class ClientHandler
     private DataInputStream in;
     private Server server;
     private String nick;
+    // путь к папке хранилищу сообщений клиента
+    private static final String path =
+            "D:\\GeekBrains\\Education_Projects\\Messenger1\\src\\Storage";
+    //файл хранилище для клиента
+    private File storage;
 
 
 
 
 
     public ClientHandler(Server server, Socket socket) {
+
+        
         try {
             this.socket = socket;
             this.server = server;
@@ -95,6 +103,24 @@ public class ClientHandler
             e.printStackTrace();
         }
         System.out.println("ClientHandler создан");
+    }
+
+    // создание хранилища сообщений для клиента
+    private File createStorage(String path)
+    { File newFile =new File(path,"Storage_"+nick+".txt");
+        boolean create=false;
+        try
+        {
+            create = newFile.createNewFile();
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        if(create)return newFile;
+        else return null;
+
     }
 
     public String getNick()
