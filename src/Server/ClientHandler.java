@@ -3,6 +3,9 @@ package Server;
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class ClientHandler
 {
@@ -16,6 +19,7 @@ public class ClientHandler
             "D:\\GeekBrains\\Education_Projects\\Messenger1\\src\\Storage";
     //файл хранилище для клиента
     private File storage;
+    private ArrayList<String> storageList;
 
 
 
@@ -53,8 +57,13 @@ public class ClientHandler
                                 }
                             }
                         }
-                        // создание файла хранилиша
+                        // создание/чтегие файла хранилища
+                        // если такого файла нет он создается
+                        // если есть, читаем из него сторки
+                        if(!new File(path,"Storage_"+nick+".txt").exists())
                         storage=createStorage(path);
+                        else storageList=readStorage(storage);
+
                         while (true) {
                             String str = in.readUTF();
                             System.out.println("Client " + str);
@@ -104,6 +113,44 @@ public class ClientHandler
 
 
     }
+    // создание хранилища сообщений для клиента
+    private File createStorage(String path)
+    {
+        File newFile =new File(path,"Storage_"+nick+".txt");
+        boolean create=false;
+            try
+            {
+                create = newFile.createNewFile();
+
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            if (create) return newFile;
+            else return null;
+    }
+
+    // чтение истории из хранилища
+    private ArrayList<String> readStorage(File storage)
+    {
+        ArrayList<String> list= new ArrayList();
+        try (FileInputStream source = new FileInputStream(storage))
+        {
+
+            Scanner sc = new Scanner(source);
+            while (sc.hasNext())
+            {
+                list.add(sc.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+
+    }
 
     // запись сообщения в файл
     public void saveMsgStorage(String msg)
@@ -123,28 +170,6 @@ public class ClientHandler
             }
         } else throw new NullPointerException();
 
-    }
-
-    // создание хранилища сообщений для клиента
-    private File createStorage(String path)
-    { File newFile =new File(path,"Storage_"+nick+".txt");
-
-        if(newFile.exists()) return newFile;
-        else
-        {
-            boolean create=false;
-            try
-            {
-                create = newFile.createNewFile();
-
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-
-            if (create) return newFile;
-            else return null;
-        }
     }
 
     public String getNick()
