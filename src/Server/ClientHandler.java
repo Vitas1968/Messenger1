@@ -108,17 +108,20 @@ public class ClientHandler
     // запись сообщения в файл
     public void saveMsgStorage(String msg)
     {
-        try(FileWriter writer = new FileWriter(storage, true))
+        if (storage!=null)
         {
-            // запись всей строки
+            try (FileWriter writer = new FileWriter(storage, true))
+            {
+                // запись всей строки
 
-            writer.write(msg+"\r\n");
-            writer.flush();
-        }
-        catch(IOException ex){
+                writer.write(msg + "\r\n");
+                writer.flush();
+            } catch (IOException ex)
+            {
 
-            System.out.println(ex.getMessage());
-        }
+                System.out.println(ex.getMessage());
+            }
+        } else throw new NullPointerException();
 
     }
 
