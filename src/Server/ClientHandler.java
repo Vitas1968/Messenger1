@@ -19,9 +19,6 @@ public class ClientHandler
             "D:\\GeekBrains\\Education_Projects\\Messenger1\\src\\Storage";
     //файл хранилище для клиента
     private File storage;
-    private ArrayList<String> storageList;
-
-
 
 
 
@@ -60,9 +57,17 @@ public class ClientHandler
                         // создание/чтегие файла хранилища
                         // если такого файла нет он создается
                         // если есть, читаем из него сторки
-                        if(!new File(path,"Storage_"+nick+".txt").exists())
+                        // и выводим в интерфейс клиента
                         storage=createStorage(path);
-                        else storageList=readStorage(storage);
+
+                      //  ArrayList<String> arrayList = readStorage(storage);
+//                        for (int i = 0; i<arrayList.size()-1 ; i++)
+//                        {
+//
+//                            System.out.println(arrayList.get(i));
+//                        }
+
+                        // outInGUI(arrayList);
 
                         while (true) {
                             String str = in.readUTF();
@@ -117,7 +122,11 @@ public class ClientHandler
     private File createStorage(String path)
     {
         File newFile =new File(path,"Storage_"+nick+".txt");
-        boolean create=false;
+        if(newFile.exists()) return newFile;
+        else
+        {
+
+            boolean create = false;
             try
             {
                 create = newFile.createNewFile();
@@ -129,6 +138,7 @@ public class ClientHandler
 
             if (create) return newFile;
             else return null;
+        }
     }
 
     // чтение истории из хранилища
@@ -137,11 +147,11 @@ public class ClientHandler
         ArrayList<String> list= new ArrayList();
         try (FileInputStream source = new FileInputStream(storage))
         {
-
             Scanner sc = new Scanner(source);
             while (sc.hasNext())
             {
                 list.add(sc.nextLine());
+                System.out.println(sc.nextLine());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -150,6 +160,16 @@ public class ClientHandler
         }
         return list;
 
+    }
+    // вывод истории в интерфейс клиента
+    private void outInGUI(ArrayList<String> storageList)
+    {
+
+
+        for (int iter=storageList.size()<=100 ? 0 : storageList.size()-100 ; iter <storageList.size()-1 ; iter++)
+        {
+            sendMsg(storageList.get(iter));
+        }
     }
 
     // запись сообщения в файл
