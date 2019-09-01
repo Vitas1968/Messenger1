@@ -12,12 +12,13 @@ public class Server
 {
     private Vector<ClientHandler> clients;
     // создание executorService
-    private ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private ExecutorService executorService;
 
     public Server() {
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
+        executorService= Executors.newFixedThreadPool(4);
 
 
 
@@ -28,7 +29,8 @@ public class Server
 
             while (true) {
                 socket = server.accept();
-                new ClientHandler(this, socket);
+                // создаем хендлер и добавляем в пул
+                executorService.submit( new ClientHandler(this, socket));
             }
 
         } catch (IOException e) {
