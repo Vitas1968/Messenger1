@@ -67,7 +67,7 @@ public class ClientHandler
 //                            System.out.println(arrayList.get(i));
 //                        }
 
-                        // outInGUI(arrayList);
+                         outInGUI(readStorage(storage));
 
                         while (true) {
                             String str = in.readUTF();
@@ -145,17 +145,32 @@ public class ClientHandler
     private ArrayList<String> readStorage(File storage)
     {
         ArrayList<String> list= new ArrayList();
-        try (FileInputStream source = new FileInputStream(storage))
+//        try (FileInputStream source = new FileInputStream(storage))
+//        {
+//            Scanner sc = new Scanner(source);
+//            while (sc.hasNext())
+//            {
+//                list.add(sc.nextLine());
+//                System.out.println(sc.nextLine());
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        String line;
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(storage)))
         {
-            Scanner sc = new Scanner(source);
-            while (sc.hasNext())
+            while ((line=dis.readUTF())!=null)
             {
-                list.add(sc.nextLine());
-                System.out.println(sc.nextLine());
+                list.add(line);
+                System.out.println(line);
             }
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e)
+        {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
         return list;
@@ -177,16 +192,26 @@ public class ClientHandler
     {
         if (storage!=null)
         {
-            try (FileWriter writer = new FileWriter(storage, true))
+//            try (FileWriter writer = new FileWriter(storage, true))
+//            {
+//                // запись всей строки
+//
+//                writer.write(msg + "\r\n");
+//                writer.flush();
+//            } catch (IOException ex)
+//            {
+//
+//                System.out.println(ex.getMessage());
+//            }
+            try(DataOutputStream dos = new DataOutputStream(new FileOutputStream(storage,true)))
             {
-                // запись всей строки
-
-                writer.write(msg + "\r\n");
-                writer.flush();
-            } catch (IOException ex)
+                dos.writeUTF(msg);
+            } catch (FileNotFoundException e)
             {
-
-                System.out.println(ex.getMessage());
+                e.printStackTrace();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
             }
         } else throw new NullPointerException();
 
