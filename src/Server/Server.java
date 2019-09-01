@@ -5,10 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server
 {
     private Vector<ClientHandler> clients;
+    // создание executorService
+    private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public Server() {
         clients = new Vector<>();
