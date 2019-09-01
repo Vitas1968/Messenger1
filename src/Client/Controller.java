@@ -95,14 +95,11 @@ public class Controller
                                 //  размещение своих сообщений справа
                                 str.trim();
                                 flag=true;
-                            } else { //   размещение очтальных сообщений слева
+                            } else { //   размещение остальных сообщений слева
                                 str.trim();
                                  }
                                  outMsg(str,flag);
-
-                           // flag= (flag) ? false: flag;
-
-                           // textArea.appendText(str + "\n");
+                            System.out.println(str);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -176,7 +173,8 @@ public class Controller
     }
 
 
-    private EventHandler<WindowEvent> closeEventHandler = new EventHandler<WindowEvent>() {
+    private EventHandler<WindowEvent> closeEventHandler = new EventHandler<WindowEvent>()
+    {
         @Override
         public void handle(WindowEvent event) {
             try
