@@ -30,7 +30,7 @@ public class Server
             while (true) {
                 socket = server.accept();
                 // создаем хендлер и добавляем в пул
-                executorService.submit( new ClientHandler(this, socket));
+                executorService.execute( new ClientHandler(this, socket));
             }
 
         } catch (IOException e) {
@@ -51,6 +51,7 @@ public class Server
                 e.printStackTrace();
             }
             AuthService.disconnect();
+            executorService.shutdown();
         }
     }
     //проверка есть ли такой клиент в чате
