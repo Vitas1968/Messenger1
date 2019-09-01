@@ -47,31 +47,51 @@ public class Server
             AuthService.disconnect();
         }
     }
+    //проверка есть ли такой клиент в чате
+    public boolean isNickBusy(String nick) {
+        for (ClientHandler o : clients) {
+            if (o.getNick().equals(nick)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
+    // рассылка сообщений всем участникам чата
     public void broadcastMsg(String msg) {
         for (ClientHandler o: clients) {
+            if (msg.startsWith(o.getNick())) {
+                // добавленный к строке пробел метка - свой
+                String tmp=" "+msg;
+                o.sendMsg(tmp);
+                o.saveMsgStorage(msg);
+                continue;
+            }
             o.sendMsg(msg);
+            o.saveMsgStorage(msg);
         }
     }
 
 
     // отправка личного сообщения указанному абоненту
-    public void privateMsg(String nick, String msg, ClientHandler client) {
-        for (ClientHandler o: clients) {
-            if(o.getNick().equals(nick))
-            {
-                o.sendMsg(client.getNick() + " " + msg);
+    public void sendPersonalMsg(ClientHandler from, String nickTo, String msg) {
+        for (ClientHandler o : clients) {
+            if (o.getNick().equals(nickTo)) {
+                o.sendMsg("from " + from.getNick() + ": " + msg);
+                from.sendMsg("to " + nickTo + ": " + msg);
                 return;
             }
         }
-        client.sendMsg("Такого абонента в чате нет");
+        from.sendMsg("Клиент с ником " + nickTo + " не найден в чате");
     }
 
+    // добавление клиента в чат
     public void subscribe(ClientHandler client) {
         clients.add(client);
     }
 
+    //удаление клиента из чата
     public void unsubscribe(ClientHandler client) {
         clients.remove(client);
     }
