@@ -18,7 +18,7 @@ public class Server
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
-        executorService= Executors.newFixedThreadPool(4);
+        executorService= Executors.newFixedThreadPool(clients.size());
 
 
 
