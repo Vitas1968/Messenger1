@@ -5,15 +5,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server
 {
     private Vector<ClientHandler> clients;
+    // создание executorService
+    private ExecutorService executorService;
 
     public Server() {
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
+        executorService= Executors.newFixedThreadPool(clients.size());
 
 
 
@@ -24,7 +29,8 @@ public class Server
 
             while (true) {
                 socket = server.accept();
-                new ClientHandler(this, socket);
+                // создаем хендлер и добавляем в пул
+                executorService.execute( new ClientHandler(this, socket));
             }
 
         } catch (IOException e) {
@@ -45,6 +51,7 @@ public class Server
                 e.printStackTrace();
             }
             AuthService.disconnect();
+            executorService.shutdown();
         }
     }
     //проверка есть ли такой клиент в чате

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ClientHandler
+public class ClientHandler implements Runnable
 {
     private Socket socket;
     private DataOutputStream out;
@@ -31,86 +31,7 @@ public class ClientHandler
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            String str = in.readUTF();
-                            if (str.startsWith("/auth")) {
-                                String[] tokens = str.split(" ");
-                                String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-                                if (newNick != null) {
-                                    if (!server.isNickBusy(newNick)) {
-                                    sendMsg("/authok");
-                                    nick = newNick;
-                                    server.subscribe(ClientHandler.this);
-                                    break;
-                                    } else {
-                                        sendMsg("Учетная запись уже используется");
-                                    }
-                                } else {
-                                    sendMsg("Неверный логин/пароль!");
-                                }
-                            }
-                        }
-                        // создание/чтегие файла хранилища
-                        // если такого файла нет он создается
-                        // если есть, читаем из него сторки
-                        // и выводим в интерфейс клиента
-                        storage=createStorage(path);
 
-                      //  ArrayList<String> arrayList = readStorage(storage);
-//                        for (int i = 0; i<arrayList.size()-1 ; i++)
-//                        {
-//
-//                            System.out.println(arrayList.get(i));
-//                        }
-
-                         outInGUI(readStorage(storage));
-
-                        while (true) {
-                            String str = in.readUTF();
-                            System.out.println("Client " + str);
-
-                            // реализация личного сообщения
-                            if (str.startsWith("/w"))
-                            {
-                                String[] tokens = str.split(" ",3);
-                                server.sendPersonalMsg(ClientHandler.this, tokens[1], tokens[2]);
-                            }
-                            if (str.equals("/end")) {
-                                out.writeUTF("/serverClosed");
-                                break;
-                            }
-                            server.broadcastMsg(nick + " : " + str);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (SQLException e)
-                    {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            in.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            out.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        server.unsubscribe(ClientHandler.this);
-                        server.broadcastMsg(ClientHandler.this.getNick()+" "+"покинул чат");
-                    }
-                }
-            }).start();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -118,6 +39,86 @@ public class ClientHandler
 
 
     }
+    //  new Thread(new Runnable() {
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                String str = in.readUTF();
+                if (str.startsWith("/auth")) {
+                    String[] tokens = str.split(" ");
+                    String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
+                    if (newNick != null) {
+                        if (!server.isNickBusy(newNick)) {
+                            sendMsg("/authok");
+                            nick = newNick;
+                            server.subscribe(ClientHandler.this);
+                            break;
+                        } else {
+                            sendMsg("Учетная запись уже используется");
+                        }
+                    } else {
+                        sendMsg("Неверный логин/пароль!");
+                    }
+                }
+            }
+            // создание/чтегие файла хранилища
+            // если такого файла нет он создается
+            // если есть, читаем из него сторки
+            // и выводим в интерфейс клиента
+            storage=createStorage(path);
+
+            //  ArrayList<String> arrayList = readStorage(storage);
+//                        for (int i = 0; i<arrayList.size()-1 ; i++)
+//                        {
+//
+//                            System.out.println(arrayList.get(i));
+//                        }
+
+            outInGUI(readStorage(storage));
+
+            while (true) {
+                String str = in.readUTF();
+                System.out.println("Client " + str);
+
+                // реализация личного сообщения
+                if (str.startsWith("/w"))
+                {
+                    String[] tokens = str.split(" ",3);
+                    server.sendPersonalMsg(ClientHandler.this, tokens[1], tokens[2]);
+                }
+                if (str.equals("/end")) {
+                    out.writeUTF("/serverClosed");
+                    break;
+                }
+                server.broadcastMsg(nick + " : " + str);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            server.unsubscribe(ClientHandler.this);
+            server.broadcastMsg(ClientHandler.this.getNick()+" "+"покинул чат");
+        }
+    }
+    // }).start();
     // создание хранилища сообщений для клиента
     private File createStorage(String path)
     {
@@ -231,4 +232,6 @@ public class ClientHandler
             e.printStackTrace();
         }
     }
+
+
 }
